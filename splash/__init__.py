@@ -38,10 +38,10 @@ def encode(url):
 
 
     curBit = 0
-    # for i in range(100):
-    #     for b in getSinusoid(1):
-    #         sineWave[curBit] = b
-    #         curBit += 1
+    for i in range(200):
+        for b in getSinusoid(0):
+            sineWave[curBit] = b
+            curBit += 1
 
     for bit in bitStream:
         newSinusoid = getSinusoid(bit)
@@ -49,10 +49,10 @@ def encode(url):
             sineWave[curBit] = b
             curBit += 1
 
-    # for i in range(100):
-    #     for b in getSinusoid(1):
-    #         sineWave[curBit] = b
-    #         curBit += 1
+    for i in range(200):
+        for b in getSinusoid(0):
+            sineWave[curBit] = b
+            curBit += 1
 
     intSineWave = np.int16(sineWave * 32767)
     wav.write(os.path.dirname(__file__) + '/../static/audio/' + fName + '.wav', SAMPLE_RATE, intSineWave)

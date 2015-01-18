@@ -65,12 +65,10 @@ def decode(file):
     lastPeak = 0
     lastTrough = 0
     lastBitVal = 0
-    lastFrequency = BASE_FREQUENCY
-    lastBinaryBit = None
     arr = []
     with open(file + '-new.html.gz', mode = 'wb') as f:
         for i, bit in enumerate(data[1:]):
-            print bit
+            # print bit
             if (bit < lastBitVal) and isIncreasing:
                 
                 lastPeak = lastBitVal
@@ -81,17 +79,18 @@ def decode(file):
 
             
             lastBitVal = bit
-            # print bit
+
             idx = i + 1
-            if bit > 0 and not positive:
+            if bit >= 0 and not positive:
                 zeroCrosses += 1
+                
                 positive = True
             elif bit < 0 and positive:
                 zeroCrosses += 1
                 positive = False
 
             if zeroCrosses >= 2:
-                    
+                
                 sinusoid = data[begIdx:idx]
                 
                 begIdx = idx
@@ -99,24 +98,21 @@ def decode(file):
                 zeroCrosses = 0
 
                 relevantBit = not relevantBit
-                 
-                if (int(lastPeak) - int(lastTrough)) > 100:
+                if relevantBit:
+                    continue
 
-                    if frequency > lastFrequency:
+                if (int(lastPeak) - int(lastTrough)) > 500:
+
+                    if frequency >= BASE_FREQUENCY:
                         arr.append('1')
-                        if relevantBit:
-                            bitList |= (1 << bitIndex)
+                        bitList |= (1 << bitIndex)
                     else:
                         arr.append('0')
-
-                    lastFrequency = frequency
-                    if relevantBit:
-                        bitIndex -= 1
-                        if bitIndex < 0:
-                            f.write(chr(bitList))
-                            bitIndex = 7
-                            bitList = 0
-
+                    bitIndex -= 1
+                    if bitIndex < 0:
+                        f.write(chr(bitList))
+                        bitIndex = 7
+                        bitList = 0
     f.close()
     print "Final idx: %d" %(idx)
     # print('\n'.join(arr))
@@ -166,5 +162,5 @@ if __name__ == '__main__':
     if sys.argv[1] == 'encode':
         encode('http://info.cern.ch/hypertext/WWW/TheProject.html', 'temp/cern')
     else:
-        decode('static/audio/7d679bbcdc8f1353865f6452fd3a9bc73e3f56daed1741bc201ba978.wav')
+        decode('static/audio/ex7.wav')
 
