@@ -59,7 +59,7 @@ def encode(url):
     intSineWave = np.int16(sineWave * 32767)
     wav.write(os.path.dirname(__file__) + '/../static/audio/' + fName + '.wav', SAMPLE_RATE, intSineWave)
     os.remove(os.path.dirname(__file__) + '/../static/tmp/' + fName + '.html.gz')
-    return 0
+    return "http://browser.ngrok.com/static/audio/%s.wav" %(fName)
 
 def download(url, filename):
     response = requests.get(url)
@@ -142,8 +142,8 @@ def getSinusoid(bit):
     MEMO[bit] = sineWave
 
     return sineWave
-#returns hexvalues of
-def getWav(filename):
+
+def requestSiteFromAudioURL(filename):
     newfile= filename.split('/')[-1]
     wavfile = urllib2.urlopen(filename)
     output = open(newfile, 'wb')
