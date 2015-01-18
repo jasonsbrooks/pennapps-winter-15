@@ -6,10 +6,17 @@ import numpy as np
 from scipy.signal import argrelextrema
 import hermes
 from scipy import signal
+import urllib2
 
 def getWav(filename):
-	(sample_rate, data) = scipy.io.wavfile.read(filename)
-	bandlimit = sample_rate/10 #every 50 ms
+	newfile= filename.split('/')[-1]
+	wavfile = urllib2.urlopen(filename)
+	output = open(newfile, 'wb')
+	output.write(wavfile.read())
+	output.close()
+
+	(sample_rate, data) = scipy.io.wavfile.read(newfile)
+	bandlimit = sample_rate/7 #every 50 ms
 	n = len(data)
 	t = [x/float(sample_rate) for x in range(n)]
 	j = 1
@@ -34,6 +41,10 @@ def getWav(filename):
 			elif(important[counter] > second_largest):
 				second_largest = important[counter]
 				l2count = counter
+		# print values[important_peaks[lcount]]
+		# print values[important_peaks[l2count]]
+		# plt.plot(values, frequencies)
+		# plt.show()
 		if(((1190 < values[important_peaks[lcount]] < 1235) and (680 < values[important_peaks[l2count]] < 710)) or \
 				((1190 < values[important_peaks[l2count]] < 1220) and (690 < values[important_peaks[lcount]] < 710))):
 			print "Tone is: 1"
@@ -70,19 +81,19 @@ def getWav(filename):
 		elif(((1440 < values[important_peaks[lcount]] < 1500) and (900 < values[important_peaks[l2count]] < 990)) or \
 				((1440 < values[important_peaks[l2count]] < 1500) and (900 < values[important_peaks[lcount]] < 990))):
 			print "Tone is: #"
-		elif(((1590 < values[important_peaks[lcount]] < 1680) and (680 < values[important_peaks[l2count]] < 710)) or \
-				((1590 < values[important_peaks[l2count]] < 1680) and (690 < values[important_peaks[lcount]] < 710))):
+		elif(((1600 < values[important_peaks[lcount]] < 1680) and (680 < values[important_peaks[l2count]] < 710)) or \
+				((1600 < values[important_peaks[l2count]] < 1680) and (690 < values[important_peaks[lcount]] < 710))):
 			print "Tone is: A"
-		elif(((1590 < values[important_peaks[lcount]] < 1680) and (750 < values[important_peaks[l2count]] < 790)) or \
-				((1590 < values[important_peaks[l2count]] < 1680) and (750 < values[important_peaks[lcount]] < 790))):
+		elif(((1600 < values[important_peaks[lcount]] < 1680) and (750 < values[important_peaks[l2count]] < 790)) or \
+				((1600 < values[important_peaks[l2count]] < 1680) and (750 < values[important_peaks[lcount]] < 790))):
 			print "Tone is: B"
 		elif(((1590 < values[important_peaks[lcount]] < 1680) and (830 < values[important_peaks[l2count]] < 880)) or \
-				((1590 < values[important_peaks[l2count]] < 1680) and (830 < values[important_peaks[lcount]] < 880))):
+				((1600 < values[important_peaks[l2count]] < 1680) and (830 < values[important_peaks[lcount]] < 880))):
 			print "Tone is: C"
-		elif(((1590 < values[important_peaks[lcount]] < 1680) and (900 < values[important_peaks[l2count]] < 990)) or \
-				((1590 < values[important_peaks[l2count]] < 1680) and (900 < values[important_peaks[lcount]] < 990))):
+		elif(((1600 < values[important_peaks[lcount]] < 1680) and (900 < values[important_peaks[l2count]] < 990)) or \
+				((1600 < values[important_peaks[l2count]] < 1680) and (900 < values[important_peaks[lcount]] < 990))):
 			print "Tone is: D"
 
 		j+=bandlimit
 
-getWav('audio_12345678987654321.wav')
+getWav('http://dialabc.com/i/cache/dtmfgen/wavpcm8.100/12131415.wav')
