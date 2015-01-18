@@ -143,7 +143,8 @@ def getSinusoid(bit):
 
     return sineWave
 
-def getWav(filename):
+def requestSiteFromAudioURL(filename):
+    return 'http://www.cnn.com'
     newfile= filename.split('/')[-1]
     wavfile = urllib2.urlopen(filename)
     output = open(newfile, 'wb')

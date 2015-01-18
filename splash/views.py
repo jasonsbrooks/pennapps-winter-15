@@ -1,6 +1,7 @@
 from flask import (Flask, render_template, Response, request, 
     Blueprint, redirect, send_from_directory, send_file, jsonify, g, url_for)
 
+from splash import *
 from twilio.rest import TwilioRestClient
 from twilio import twiml
 import os
@@ -31,7 +32,7 @@ def call():
 def initialize():
 	print request.values
 	resp = twiml.Response()
-	with resp.gather(timeout=999, numDigits="1", action="/send-request-handler", method="POST") as g:
+	with resp.gather(timeout=999, numDigits=1, action="/send-request-handler", method="POST") as g:
 		g.say("Session activated.")
 	return str(resp)
 
@@ -39,18 +40,26 @@ def initialize():
 def sendRequest():
 	recording_url = request.values.get("RecordingUrl", None)
 	if recording_url:
-		requestSiteFromAudioURL(recording_url)
-	resp = twiml.Response()
-	# play recording
-	# print recording_url
-	# resp = twiml.Response()
-	# resp.record(finishOnKey='#', timeout=999)
-	# resp.say("Goodbye.")
-	return str(resp)
+		print recording_url
+		site = requestSiteFromAudioURL(recording_url)
+		audioURL = encode(site)
+		resp = twiml.Response()
+		resp.play(audioURL)
+		return str(resp)
+	# First time using this endpoint
+	else:
+		resp = twiml.Response()
+		resp.record(timeout=999, finishOnKey='*', action="/receive-data-handler", playBeep=False)
+		return str(resp)
 
-# @splash.route('/receive-data-handler', methods=['GET', 'POST'])
-# def receiveRequest():
-# 	resp = twiml.Response()
+@splash.route('/receive-data-handler', methods=['GET', 'POST'])
+def receiveRequest():
+	recording_url = request.values.get("RecordingUrl", None)
+	site = requestSiteFromAudioURL(recording_url)
+	audioURL = encode(site)
+	resp = twiml.Response()
+	resp.play(audioURL)
+	return str(resp)
 
 
 @splash.route('/send-swift-xml', methods=['POST'])
