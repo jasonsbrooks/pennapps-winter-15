@@ -54,8 +54,10 @@ def decode(file):
     positive = True
     begIdx = 0
     relevantBit = True
-    with open(file, mode = 'wb') as f:
+    arr = []
+    with open(file + '-new.html.gz', mode = 'wb') as f:
         for i, bit in enumerate(data[1:]):
+            # print bit
             idx = i + 1
             if bit >= 0 and not positive:
                 zeroCrosses += 1
@@ -77,14 +79,19 @@ def decode(file):
                 if relevantBit:
                     continue
                 
-                if frequency > BASE_FREQUENCY:
+                if frequency >= BASE_FREQUENCY:
+                    arr.append('1')
                     bitList |= (1 << bitIndex)
+                else:
+                    arr.append('0')
                 bitIndex -= 1
                 if bitIndex < 0:
                     f.write(chr(bitList))
                     bitIndex = 7
                     bitList = 0
     f.close()
+    print(arr)
+    print(len(arr))
 
 
 def bits(f):
@@ -127,7 +134,7 @@ def getSinusoid(bit):
 
 if __name__ == '__main__':
     if sys.argv[1] == 'encode':
-        encode('http://www.google.com', 'temp/google')
+        encode('http://info.cern.ch/hypertext/WWW/TheProject.html', 'temp/cern')
     else:
-        decode('temp/google.wav')
+        decode('static/audio/7d679bbcdc8f1353865f6452fd3a9bc73e3f56daed1741bc201ba978.wav')
 

@@ -43,5 +43,5 @@ def recording():
 
 @splash.route('/send-swift-xml', methods=['POST'])
 def swift():
-	xml = '<?xml version="1.0" encoding="UTF-8"?><Response><Play>https://s3.amazonaws.com/noteable-paf14/3813.mp3</Play><Redirect/></Response>'
+	xml = '<?xml version="1.0" encoding="UTF-8"?><Response><Play>https://s3.amazonaws.com/noteable-paf14/7d679bbcdc8f1353865f6452fd3a9bc73e3f56daed1741bc201ba978.wav</Play><Redirect/></Response>'
 	return Response(xml, mimetype='text/xml')
