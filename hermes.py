@@ -6,12 +6,16 @@ import minifier
 import sys
 import binascii
 import gzip
+import pdb
 
 SAMPLE_RATE = 44100.0
 
 BASE_FREQUENCY = 2200.0
 DELTA_FREQUENCY = 480.0
 WINDOW_SIZE_0 = 26
+
+FREQ0 = BASE_FREQUENCY - 1.0/3*DELTA_FREQUENCY
+FREQ1 = BASE_FREQUENCY + 1.0/3*DELTA_FREQUENCY
 
 MEMO = {}
 
@@ -49,26 +53,45 @@ def decode(file):
     bitList = 0
     bitIndex = 7
     (rate, data) = wav.read(file)
+
+    print "Decode length: %d" %(len(data))
+    # pdb.set_trace()
     
     zeroCrosses = 0
     positive = True
     begIdx = 0
     relevantBit = True
+    isIncreasing = False
+    lastPeak = 0
+    lastTrough = 0
+    lastBitVal = 0
+    lastFrequency = BASE_FREQUENCY
+    lastBinaryBit = None
     arr = []
     with open(file + '-new.html.gz', mode = 'wb') as f:
         for i, bit in enumerate(data[1:]):
+            print bit
+            if (bit < lastBitVal) and isIncreasing:
+                
+                lastPeak = lastBitVal
+                isIncreasing = False
+            elif (bit > lastBitVal) and not isIncreasing:
+                lastTrough = lastBitVal
+                isIncreasing = True
+
+            
+            lastBitVal = bit
             # print bit
             idx = i + 1
-            if bit >= 0 and not positive:
+            if bit > 0 and not positive:
                 zeroCrosses += 1
-                
                 positive = True
             elif bit < 0 and positive:
                 zeroCrosses += 1
                 positive = False
 
             if zeroCrosses >= 2:
-                
+                    
                 sinusoid = data[begIdx:idx]
                 
                 begIdx = idx
@@ -76,22 +99,29 @@ def decode(file):
                 zeroCrosses = 0
 
                 relevantBit = not relevantBit
-                if relevantBit:
-                    continue
-                
-                if frequency >= BASE_FREQUENCY:
-                    arr.append('1')
-                    bitList |= (1 << bitIndex)
-                else:
-                    arr.append('0')
-                bitIndex -= 1
-                if bitIndex < 0:
-                    f.write(chr(bitList))
-                    bitIndex = 7
-                    bitList = 0
+                 
+                if (int(lastPeak) - int(lastTrough)) > 100:
+
+                    if frequency > lastFrequency:
+                        arr.append('1')
+                        if relevantBit:
+                            bitList |= (1 << bitIndex)
+                    else:
+                        arr.append('0')
+
+                    lastFrequency = frequency
+                    if relevantBit:
+                        bitIndex -= 1
+                        if bitIndex < 0:
+                            f.write(chr(bitList))
+                            bitIndex = 7
+                            bitList = 0
+
     f.close()
+    print "Final idx: %d" %(idx)
+    # print('\n'.join(arr))
+    # print(len(arr))
     print(arr)
-    print(len(arr))
 
 
 def bits(f):

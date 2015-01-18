@@ -15,6 +15,7 @@ import re
 import os.path
 import html2text
 import markdown2
+import pdb
 
 SAMPLE_RATE = 44100.0
 
@@ -53,10 +54,8 @@ def encode(url):
     #         sineWave[curBit] = b
     #         curBit += 1
 
-    np.set_printoptions(threshold='nan')
-    # print sineWave
-
-    wav.write(os.path.dirname(__file__) + '/../static/audio/' + fName + '.wav', SAMPLE_RATE, sineWave)
+    intSineWave = np.int16(sineWave * 32767)
+    wav.write(os.path.dirname(__file__) + '/../static/audio/' + fName + '.wav', SAMPLE_RATE, intSineWave)
     os.remove(os.path.dirname(__file__) + '/../static/tmp/' + fName + '.html.gz')
     return 0
 
@@ -136,7 +135,9 @@ def getSinusoid(bit):
     windowSize = SAMPLE_RATE * period
     t = np.linspace(0, period, windowSize)
     sineWave2 = np.sin(2*np.pi*frequency*t)
-    sineWave = np.append(sineWave, sineWave2)
+    sineWave = np.append(sineWave[:-1], sineWave2[:-1])
 
     MEMO[bit] = sineWave
+
+
     return sineWave
