@@ -115,8 +115,6 @@ def decode(file):
                         bitList = 0
     f.close()
     print "Final idx: %d" %(idx)
-    # print('\n'.join(arr))
-    # print(len(arr))
     print(arr)
 
 
