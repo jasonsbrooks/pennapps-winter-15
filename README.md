@@ -1,2 +1,2 @@
 # pennapps-winter15
-Henok is a master at code. Love him. Shrek is love. Shrek is life.
+This is a service that allows the user to gain access to webpages without any Internet access.
